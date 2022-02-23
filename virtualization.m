@@ -198,6 +198,16 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
 }
 
 /*!
+ @abstract List of directory sharing devices. Empty by default.
+ @see VZVirtioFileSystemDeviceConfiguration
+ */
+void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config,
+                                                    void *dirShareDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setDirectorySharingDevices:[(NSMutableArray *)dirShareDevices copy]];
+}
+
+/*!
  @abstract Intialize the VZFileHandleSerialPortAttachment from file descriptors.
  @param readFileDescriptor File descriptor for reading from the file.
  @param writeFileDescriptor File descriptor for writing to the file.
@@ -372,6 +382,35 @@ void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly,
         error:(NSError * _Nullable * _Nullable)error];
 }
 
+/*!
+ @abstract Initialize a VZVirtioFileSystemDeviceConfiguration
+ @param tag VIRTIO tag for the directory share
+ @param share VZDirectoryShare that define how the host exposes resources to the guest virtual machine
+ @return A VZVirtioFileSystemDeviceConfiguration on success. Nil otherwise.
+ */
+void *newVZVirtioFileSystemDeviceConfiguration(const char *tag, void *share)
+{
+    NSString *dirTag = [NSString stringWithUTF8String:tag];
+    VZVirtioFileSystemDeviceConfiguration *config = [[VZVirtioFileSystemDeviceConfiguration alloc] initWithTag:dirTag];
+    [config setShare:(VZDirectoryShare *)share];
+    return config;
+}
+
+/*!
+ @abstract Initialize a VZVirtioFileSystemDeviceConfiguration
+ @param tag VIRTIO tag for the directory share
+ @param share VZDirectoryShare that define how the host exposes resources to the guest virtual machine
+ @return A VZVirtioFileSystemDeviceConfiguration on success. Nil otherwise.
+ */
+void *newVZSingleDirectoryShare(const char *directoryPath, bool readOnly)
+{
+    NSString *directoryPathNSString = [NSString stringWithUTF8String:directoryPath];
+    NSURL *directoryURL = [NSURL fileURLWithPath:directoryPathNSString];
+
+    VZSharedDirectory *dir = [[VZSharedDirectory alloc] initWithURL:directoryURL readOnly:(BOOL)readOnly];
+
+    return [[VZSingleDirectoryShare alloc] initWithDirectory:dir];
+}
 
 /*!
  @abstract Create a configuration of the Virtio traditional memory balloon device.

@@ -49,6 +49,8 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
                                                    void *socketDevices);
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
                                                     void *storageDevices);
+void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config,
+                                                    void *dirShareDevices);
 
 /* Configurations */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
@@ -72,6 +74,8 @@ void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, const char *socketDeviceID);
+void *newVZSingleDirectoryShare(const char *directoryPath, bool readOnly);
+void *newVZVirtioFileSystemDeviceConfiguration(const char *tag, void *share);
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);

@@ -4,6 +4,7 @@ import (
 	l "log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -113,6 +114,15 @@ func main() {
 	config.SetSocketDevicesVirtualMachineConfiguration([]vz.SocketDeviceConfiguration{
 		vz.NewVirtioSocketDeviceConfiguration(),
 	})
+
+	homeDir, _ := os.UserHomeDir()
+
+	sharedDirConfig := vz.NewSingleDirectoryShare(filepath.Join(homeDir, "vfkit-test"), false)
+	fileSystemDeviceConfig := vz.NewVirtioFileSystemDeviceConfiguration("vfkit-crc-test", sharedDirConfig)
+	config.SetDirectorySharingDevicesVZVirtualMachineConfiguration([]*vz.VirtioFileSystemDeviceConfiguration{
+		fileSystemDeviceConfig,
+	})
+
 	validated, err := config.Validate()
 	if !validated || err != nil {
 		log.Fatal("validation failed", err)
